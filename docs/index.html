@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<!-- 엘샤#2343 -->
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>#MERAKyatsDressUp</title>
+<meta name="format-detection" content="email=no,telephone=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="author" content="LiviaMedeiros" />
+<meta name="description" content="Ultimate Fashionista Simulator" />
+<meta property="og:image" content="https://mr.akyat.orange-pla.net/img/frame.png" />
+<meta property="og:image:alt" content="#MERAKyatsDressUp" />
+<meta property="og:type" content="object" />
+<meta property="og:title" content="#MERAKyatsDressUp" />
+<meta property="og:url" content="https://mr.akyat.orange-pla.net" />
+<meta name="twitter:image:src" content="https://mr.akyat.orange-pla.net/img/sample.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="#MERAKyatsDressUp" />
+<meta name="theme-color" content="#003388" />
+<link rel="canonical" href="https://mr.akyat.orange-pla.net/" />
+<link rel="icon" type="image/png" sizes="256x256" href="/favicon.png" />
+<link rel="icon" type="image/png" sizes="128x128" href="/favicon128.png" />
+<link rel="icon" type="image/png" sizes="64x64" href="/favicon64.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon32.png" />
+<style>
+@font-face {
+	font-family: lilitaone;
+	src: url('/font/LilitaOne-Regular.ttf');
+}
+html,body {
+	background: #999999;
+	margin: 0;
+	padding: 0;
+	font-family: lilitaone;
+	font-size: 20px;
+}
+#all {
+	padding: 8px;
+}
+#wrap {
+	position: relative;
+	width: 1800px;
+	height: 900px;
+	overflow: hidden;
+	box-shadow: 9px 9px 18px rgba(0,0,0,.5);
+}
+#cvs {
+	background: repeating-conic-gradient(rgba(0, 0, 0, .5) 0% 25%, rgba(255, 255, 255, .5) 0% 50%) 50% / 16px 16px;
+	width: 1800px;
+	height: 900px;
+	position: absolute;
+}
+#border {
+	width: 2px;
+	left: 900px;
+	height: 900px;
+	position: absolute;
+	background: rgba(255,0,0,.9);
+	z-index: 999;
+}
+#btns {
+	margin-bottom: 8px;
+	display: flex;
+}
+#btns>button, #btns>input, #btns>a, #btns summary {
+	width: 48px;
+	height: 40px;
+	vertical-align: bottom;
+	appearance: none;
+	text-decoration: none;
+	color: initial;
+	cursor: grabbing;
+	display: flex;
+	text-align: center;
+	align-items: center; justify-content: center;
+	box-sizing: border-box;
+	background: linear-gradient(to bottom, #999999 0%, #cccccc 30%, #dddddd 100%);
+	margin: 2px;
+	border-width: 1px;
+	border-style: outset;
+	border-color: #333333;
+	border-radius: 6px;
+}
+#btns>details[open]>div {
+	position: absolute;
+	z-index: 999;
+	border-radius: 9px;
+	background: linear-gradient(to bottom, #aaaaaa 0%, #dddddd 20%, #eeeeee 100%);
+	box-shadow: 4px 4px 4px rgba(0,0,0,.5);
+	padding: 8px;
+}
+#btns>details>div span {
+	color: #006999;
+}
+#btns>details>div span:after {
+	content: ':';
+}
+#accessory_menu {
+	position: absolute;
+	background: blue;
+	width: 200px;
+	height: 200px;
+	z-index: 1500;
+}
+</style>
+<script src="/js/konva.min.js" integrity="sha512-7TYV9qFuQjXYN5W6BL7AUJ6rkrQhDf2Oshg5ZjErvmC79l9V948XsiW4wxOdAtf5R8c00p/Og3k3zjEV6HnjDQ=="></script>
+<script type="module">
+/*! For Pavolia Reine with love © 2022 LiviaMedeiros */
+const _ = {
+	stage: null,
+	bg: null,
+	layer: null,
+	selected: null,
+}
+
+const main = async () => {
+	const I = document.getElementById.bind(document);
+	const saveFile = (href, download) =>
+		Object.assign(document.createElement('a'), {
+			href: URL.createObjectURL(href), download,
+			rel: 'noopener',
+		}).dispatchEvent(new MouseEvent('click'));
+
+	const width = 900;
+	const height = 900;
+	const offset = 8;
+
+	_.stage = new Konva.Stage({
+		container: 'cvs',
+		width: width * 2,
+		height,
+	});
+
+	_.bg = new Konva.Rect({
+		x: 0,
+		y: 0,
+		width: width * 2,
+		height,
+		fill: 'transparent',
+	});
+	_.stage.add(new Konva.Layer().add(_.bg));
+
+	_.layer = new Konva.Layer();
+	_.stage.add(_.layer);
+
+	const transformer = new Konva.Transformer({
+		nodes: [],
+		centeredScaling: true,
+		rotationSnaps: [0, 90, 180, 270],
+	});
+
+	const addAccessory = img => {
+		img.cache();
+		img.drawHitFromCache();
+		img.filters([Konva.Filters.HSL]);
+		return _.layer.add(img);
+	};
+
+	const loadImage = async src =>
+		new Promise((onload, onerror) =>
+			Object.assign(new Image, { onload, onerror, src })
+		);
+
+	const drawImage = image => {
+		const { width, height } = image;
+		const max_width = _.stage.width() / 2 - width - offset * 2;
+		const max_height = _.stage.height() - height - offset * 2;
+		const x = _.stage.width() / 2 + width / 2 + Math.random() * max_width + offset;
+		const y = height / 2 + Math.random() * max_height + offset;
+		const img = new Konva.Image({
+			image,
+			x,
+			y,
+			draggable: true,
+			offset: {
+				x: width / 2,
+				y: height / 2,
+			},
+		}).on('pointerdown', ({ target }) => {
+			target.moveToTop();
+			_.selected = target;
+		}).on('pointerover', () =>
+			document.body.style.cursor = 'grab'
+		).on('pointerout', () =>
+			document.body.style.cursor = 'default'
+		).on('wheel', ({ evt, target }) => {
+			evt.preventDefault();
+			evt.shiftKey
+				? target.rotate(evt.deltaY < 0 ? -1 : 1)
+				: target.hue(target.hue() + (evt.deltaY < 0 ? -2 : 2));
+		}).on('click', ({ evt, target }) => {
+			evt.ctrlKey && target.hue(0);
+			evt.shiftKey && transformer.nodes(transformer.nodes().includes(target) ? [] : [target]);
+		}).on('pointerdblclick', ({ evt, target }) => {
+			evt.preventDefault();
+			const img = target.clone();
+			img.x(img.x() + 16);
+			img.y(img.y() + 16);
+			return addAccessory(img);
+		});
+		return addAccessory(img);
+	}
+
+	_.layer.add(new Konva.Image({
+		x: 0,
+		y: 0,
+		image: (await loadImage('/img/mrAkyat.png')).target,
+		width,
+		height,
+	}));
+
+	_.layer.add(transformer);
+
+	[
+		'original1',
+		'original2',
+		'original3',
+		'original4',
+
+		'ollie',
+		'airaniiofifteenchangeurnameplease',
+		'zeta',
+		'baelz',
+		'irys',
+		'amelia',
+		'coco',
+		'suisei',
+		'nene',
+		'subaru',
+		'botan',
+		'reine',
+		'anya',
+		'koyori',
+		'fubuki',
+		'pekora',
+		'marine',
+		'haachama',
+
+		'misc1',
+		'misc2',
+		'misc3',
+		'misc4',
+	].forEach(accessory =>
+		loadImage(`/img/${accessory}.png`).then(({ target }) => drawImage(target))
+	);
+
+	document.addEventListener('keydown', e => {
+		if (!_.selected) return;
+		const delta = e.ctrlKey ? 1 : 9;
+		switch (e.key) {
+			case 'ArrowLeft':  _.selected.x(_.selected.x() - delta); break;
+			case 'ArrowUp':    _.selected.y(_.selected.y() - delta); break;
+			case 'ArrowRight': _.selected.x(_.selected.x() + delta); break;
+			case 'ArrowDown':  _.selected.y(_.selected.y() + delta); break;
+			case ' ': new Audio('/sound/honk.mp3').play(); break;
+			default: return;
+		}
+		e.preventDefault();
+	});
+
+	I('export').addEventListener('click', () => {
+		transformer.nodes([]);
+		setTimeout(async () => {
+			const out = new OffscreenCanvas(width, height);
+			const ctx = out.getContext('2d');
+			_.stage.getLayers().forEach(layer => {
+				const canvas = layer.getCanvas()._canvas;
+				ctx.drawImage(
+					canvas,
+					0, 0, canvas.width / 2, canvas.height,
+					0, 0, width, height,
+				);
+			});
+			saveFile(await out.convertToBlob({
+				type: 'image/png',
+				quality: 1,
+			}), 'mrAkyat.png');
+		}, 300);
+	});
+
+	I('fullscreen').addEventListener('click', () => I('cvs').requestFullscreen().catch(console.error));
+	I('set_transparent').addEventListener('click', () => _.bg.fill('transparent'));
+	I('set_white').addEventListener('click', () => _.bg.fill('white'));
+	I('set_custom').addEventListener('change', ({ target: { value }}) => _.bg.fill(value));
+};
+
+document.addEventListener('DOMContentLoaded', main, { once: true });
+</script>
+</head>
+<body>
+<div id="all">
+<div id="btns">
+	<button id="export" title="export as png"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg></button>
+	<button id="fullscreen" title="fullscreen"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-fullscreen" viewBox="0 0 16 16"><path d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/></svg></button>
+	<button id="set_transparent" title="transparent background"><div style="display:inline-block;width:32px;height:32px;background:repeating-conic-gradient(rgba(0, 0, 0, .5) 0% 25%, rgba(255, 255, 255, .5) 0% 50%) 50% / 16px 16px"></div></button>
+	<button id="set_white" title="white background"><div style="display:inline-block;width:32px;height:32px;background:white"></div></button>
+	<input id="set_custom" type="color" value="#006999" title="custom color background" />
+	<a href="https://youtu.be/_bu305NfWhw?t=2250" target="_blank" title="source on youtube"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-youtube" viewBox="0 0 16 16"><path d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.007 2.007 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.007 2.007 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31.4 31.4 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.007 2.007 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A99.788 99.788 0 0 1 7.858 2h.193zM6.4 5.209v4.818l4.157-2.408L6.4 5.209z"/></svg></a>
+	<a href="https://twitter.com/hashtag/MERAKyatsDressUp" target="_blank" title="source on twitter"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-twitter" viewBox="0 0 16 16"><path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"/></svg></a>
+	<a href="https://www.youtube.com/channel/UChgTyjG-pdNvxxhdsXfHQ5Q?sub_confirmation=1" target="_blank" title="Pavolia Reine Ch.">🦚</a>
+	<details>
+		<summary><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-lg" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.475 5.458c-.284 0-.514-.237-.47-.517C4.28 3.24 5.576 2 7.825 2c2.25 0 3.767 1.36 3.767 3.215 0 1.344-.665 2.288-1.79 2.973-1.1.659-1.414 1.118-1.414 2.01v.03a.5.5 0 0 1-.5.5h-.77a.5.5 0 0 1-.5-.495l-.003-.2c-.043-1.221.477-2.001 1.645-2.712 1.03-.632 1.397-1.135 1.397-2.028 0-.979-.758-1.698-1.926-1.698-1.009 0-1.71.529-1.938 1.402-.066.254-.278.461-.54.461h-.777ZM7.496 14c.622 0 1.095-.474 1.095-1.09 0-.618-.473-1.092-1.095-1.092-.606 0-1.087.474-1.087 1.091S6.89 14 7.496 14Z"/></svg></summary>
+		<div>
+			<p><span>left mouse touch</span> select accessory (move on top)</p>
+			<p><span>left mouse drag</span> move accessory</p>
+			<p><span>mouse double click</span> copy accessory</p>
+			<p><span>mouse wheel over accessory</span> rotate palette</p>
+			<p><span>shift + mouse wheel</span> rotate accessory</p>
+			<p><span>ctrl + left mouse click</span> reset palette</p>
+			<p><span>shift + left mouse click</span> rotate&amp;scale mode</p>
+			<p><span>keeb arrows</span> move selected accessory</p>
+			<p><span>ctrl + keeb arrows</span> move selected accessory precisely</p>
+			<p><span>space</span> honk</p>
+			<hr />
+			<p>assets drawn by Pavolia Reine</p>
+		</div>
+	</details>
+</div>
+<div id="wrap"><div id="cvs"></div><div id="border"></div></div>
+</div>
+</body>
+</html>
