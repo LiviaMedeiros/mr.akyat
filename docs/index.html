@@ -5,7 +5,7 @@
 <meta charset="UTF-8" />
 <title>#MERAKyatsDressUp</title>
 <meta name="format-detection" content="email=no,telephone=no" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=0.5" />
 <meta name="author" content="LiviaMedeiros" />
 <meta name="description" content="Ultimate Fashionista Simulator" />
 <meta property="og:image" content="https://mr.akyat.orange-pla.net/img/mrAkyat.png" />
@@ -58,6 +58,7 @@ html,body {
 	display: flex;
 }
 #btns>button, #btns>input, #btns>a, #btns summary {
+	min-width: 48px;
 	width: 48px;
 	height: 40px;
 	vertical-align: bottom;
@@ -67,7 +68,8 @@ html,body {
 	cursor: grabbing;
 	display: flex;
 	text-align: center;
-	align-items: center; justify-content: center;
+	align-items: center;
+	justify-content: center;
 	box-sizing: border-box;
 	background: linear-gradient(to bottom, #999999 0%, #cccccc 30%, #dddddd 100%);
 	margin: 2px 6px;
@@ -78,6 +80,7 @@ html,body {
 }
 #btns>details[open]>div {
 	position: absolute;
+	width: 512px;
 	z-index: 999;
 	border-radius: 9px;
 	background: linear-gradient(to bottom, #aaaaaa 0%, #dddddd 20%, #eeeeee 100%);
@@ -121,41 +124,6 @@ const main = async () => {
 	const width = 900;
 	const height = 900;
 	const offset = 8;
-
-	_.stage = new Konva.Stage({
-		container: 'cvs',
-		width: width * 2,
-		height,
-	});
-
-	_.stage.add(new Konva.Layer().add(_.bg = new Konva.Rect({
-		x: 0,
-		y: 0,
-		width,
-		height,
-		fill: 'transparent',
-	}), new Konva.Rect({
-		x: width,
-		y: 0,
-		width: 100,
-		height,
-		fillLinearGradientStartPoint: { x: 0, y: 0 },
-		fillLinearGradientEndPoint: { x: 100, y: 0 },
-		fillLinearGradientColorStops: [
-			0, '#006999',
-			.02, '#006999',
-			.02, 'rgba(0,0,0,.4)',
-			1, 'rgba(0,0,0,0)'
-		],
-	})));
-
-	_.stage.add(_.layer = new Konva.Layer());
-
-	_.transformer = new Konva.Transformer({
-		nodes: [],
-		centeredScaling: true,
-		rotationSnaps: [0, 90, 180, 270],
-	});
 
 	const addAccessory = img => {
 		img.cache();
@@ -209,15 +177,48 @@ const main = async () => {
 		return addAccessory(img);
 	}
 
+	_.stage = new Konva.Stage({
+		container: 'cvs',
+		width: width * 2,
+		height,
+	});
+
+	_.stage.add(new Konva.Layer().add(_.bg = new Konva.Rect({
+		x: 0,
+		y: 0,
+		width,
+		height,
+		fill: 'transparent',
+	}), new Konva.Rect({
+		x: width,
+		y: 0,
+		width: 100,
+		height,
+		fillLinearGradientStartPoint: { x: 0, y: 0 },
+		fillLinearGradientEndPoint: { x: 100, y: 0 },
+		fillLinearGradientColorStops: [
+			0, '#006999',
+			.02, '#006999',
+			.02, 'rgba(0,0,0,.4)',
+			1, 'rgba(0,0,0,0)'
+		],
+	})));
+
+	_.stage.add(_.layer = new Konva.Layer());
+
+	_.transformer = new Konva.Transformer({
+		nodes: [],
+		centeredScaling: true,
+		rotationSnaps: [0, 90, 180, 270],
+	});
+
 	_.layer.add(new Konva.Image({
 		x: 0,
 		y: 0,
 		image: (await loadImage('/img/mrAkyat.png')).target,
 		width,
 		height,
-	}));
-
-	_.layer.add(_.transformer);
+	}), _.transformer);
 
 	[
 		'original1',
