@@ -129,7 +129,10 @@ const main = async () => {
 	const addAccessory = img => {
 		img.cache();
 		img.drawHitFromCache();
-		img.filters([Konva.Filters.HSL]);
+		img.filters([
+			Konva.Filters.HSL,
+			Konva.Filters.Pixelate,
+		]);
 		return _.layer.add(img);
 	};
 
@@ -148,6 +151,7 @@ const main = async () => {
 			image,
 			x,
 			y,
+			pixelSize: 1,
 			draggable: true,
 			offset: {
 				x: width / 2,
@@ -257,26 +261,29 @@ const main = async () => {
 	document.addEventListener('keydown', e => {
 		if (!_.selected) return;
 		const delta = e.ctrlKey ? 1 : 9;
-		switch (e.key) {
+		switch (e.code) {
 			case 'ArrowLeft':  _.selected.x(_.selected.x() - delta); break;
 			case 'ArrowUp':    _.selected.y(_.selected.y() - delta); break;
 			case 'ArrowRight': _.selected.x(_.selected.x() + delta); break;
 			case 'ArrowDown':  _.selected.y(_.selected.y() + delta); break;
-			case '-': {
+			case 'KeyY': _.selected.pixelSize(_.selected.pixelSize() === 1 ? 9 : 1); break;
+			case 'Minus':
+			case 'NumpadSubtract': {
 				const { x, y } = _.selected.scale();
 				_.selected.scale({
 					x: Math.max(x - delta * .01, .1),
 					y: Math.max(y - delta * .01, .1),
 				});
 			}; break;
-			case '+': {
+			case 'Equal':
+			case 'NumpadAdd': {
 				const { x, y } = _.selected.scale();
 				_.selected.scale({
 					x: Math.min(x + delta / 100, 10),
 					y: Math.min(y + delta / 100, 10),
 				});
 			}; break;
-			case ' ': new Audio('/sound/honk.mp3').play(); break;
+			case 'Space': new Audio('/sound/honk.mp3').play(); break;
 			default: return;
 		}
 		e.preventDefault();
@@ -356,6 +363,7 @@ document.addEventListener('DOMContentLoaded', main, { once: true });
 			<p><span>ctrl + keeb arrows</span> move selected accessory precisely</p>
 			<p><span>+/-</span> scale selected accessory</p>
 			<p><span>ctrl + +/-</span> scale selected accessory precisely</p>
+			<p><span>Y</span> yabe selected accessory</p>
 			<p><span>space</span> honk</p>
 		</div>
 	</details>
