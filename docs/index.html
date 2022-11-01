@@ -262,6 +262,20 @@ const main = async () => {
 			case 'ArrowUp':    _.selected.y(_.selected.y() - delta); break;
 			case 'ArrowRight': _.selected.x(_.selected.x() + delta); break;
 			case 'ArrowDown':  _.selected.y(_.selected.y() + delta); break;
+			case '-': {
+				const { x, y } = _.selected.scale();
+				_.selected.scale({
+					x: Math.max(x - delta * .01, .1),
+					y: Math.max(y - delta * .01, .1),
+				});
+			}; break;
+			case '+': {
+				const { x, y } = _.selected.scale();
+				_.selected.scale({
+					x: Math.min(x + delta / 100, 10),
+					y: Math.min(y + delta / 100, 10),
+				});
+			}; break;
 			case ' ': new Audio('/sound/honk.mp3').play(); break;
 			default: return;
 		}
@@ -340,6 +354,8 @@ document.addEventListener('DOMContentLoaded', main, { once: true });
 			<p><span>shift + left mouse click</span> rotate&amp;scale mode</p>
 			<p><span>keeb arrows</span> move selected accessory</p>
 			<p><span>ctrl + keeb arrows</span> move selected accessory precisely</p>
+			<p><span>+/-</span> scale selected accessory</p>
+			<p><span>ctrl + +/-</span> scale selected accessory precisely</p>
 			<p><span>space</span> honk</p>
 		</div>
 	</details>
