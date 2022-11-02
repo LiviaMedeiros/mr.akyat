@@ -116,9 +116,9 @@ const _ = {
 
 const main = async () => {
 	const I = document.getElementById.bind(document);
-	const saveFile = (href, download) =>
+	const saveFile = (href, download = 'mrAkyat.png') =>
 		Object.assign(document.createElement('a'), {
-			href: URL.createObjectURL(href), download,
+			href, download,
 			rel: 'noopener',
 		}).dispatchEvent(new MouseEvent('click'));
 
@@ -141,7 +141,7 @@ const main = async () => {
 			Object.assign(new Image, { onload, onerror, src })
 		);
 
-	const drawImage = image => {
+	const drawImage = (image, options = {}) => {
 		const { width, height } = image;
 		const max_width = _.stage.width() / 2 - width - offset * 2;
 		const max_height = _.stage.height() - height - offset * 2;
@@ -151,16 +151,18 @@ const main = async () => {
 			image,
 			x,
 			y,
+			width,
+			height,
 			pixelSize: 1,
 			draggable: true,
 			offset: {
 				x: width / 2,
 				y: height / 2,
 			},
-		}).on('pointerdown', ({ target }) => {
-			target.moveToTop();
-			_.selected = target;
-		}).on('pointerover', () =>
+			...options,
+		}).on('pointerdown', ({ target }) =>
+			(_.selected = target).moveToTop()
+		).on('pointerover', () =>
 			document.body.style.cursor = 'grab'
 		).on('pointerout', () =>
 			document.body.style.cursor = 'default'
@@ -254,8 +256,8 @@ const main = async () => {
 		'misc2',
 		'misc3',
 		'misc4',
-	].forEach(accessory =>
-		loadImage(`/img/${accessory}.png`).then(({ target }) => drawImage(target))
+	].forEach(name =>
+		loadImage(`/img/${name}.png`).then(({ target }) => drawImage(target, { name }))
 	);
 
 	document.addEventListener('keydown', e => {
@@ -291,22 +293,12 @@ const main = async () => {
 
 	I('export').addEventListener('click', () => {
 		_.transformer.nodes([]);
-		setTimeout(async () => {
-			const out = new OffscreenCanvas(width, height);
-			const ctx = out.getContext('2d');
-			_.stage.getLayers().forEach(layer => {
-				const canvas = layer.getCanvas()._canvas;
-				ctx.drawImage(
-					canvas,
-					0, 0, canvas.width / 2, canvas.height,
-					0, 0, width, height,
-				);
-			});
-			saveFile(await out.convertToBlob({
-				type: 'image/png',
-				quality: 1,
-			}), 'mrAkyat.png');
-		}, 300);
+		_.stage.toBlob({
+			x: 0,
+			y: 0,
+			width,
+			height,
+		}).then(blob => saveFile(URL.createObjectURL(blob)));
 	});
 
 	const uppy = new Uppy.Uppy({
