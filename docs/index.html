@@ -292,13 +292,16 @@ const main = async () => {
 	});
 
 	I('export').addEventListener('click', () => {
+		const tmp = _.transformer.nodes();
 		_.transformer.nodes([]);
 		_.stage.toBlob({
 			x: 0,
 			y: 0,
 			width,
 			height,
-		}).then(blob => saveFile(URL.createObjectURL(blob)));
+		})
+		.then(blob => saveFile(URL.createObjectURL(blob)))
+		.finally(() => _.transformer.nodes(tmp));
 	});
 
 	const uppy = new Uppy.Uppy({
