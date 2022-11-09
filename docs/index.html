@@ -13,20 +13,20 @@
 <meta property="og:type" content="object" />
 <meta property="og:title" content="#MERAKyatsDressUp" />
 <meta property="og:url" content="https://mr.akyat.orange-pla.net" />
-<meta name="twitter:image:src" content="https://mr.akyat.orange-pla.net/img/sample.png" />
+<meta name="twitter:image:src" content="https://mr.akyat.orange-pla.net/img/mrAkyat.png" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="#MERAKyatsDressUp" />
 <meta name="theme-color" content="#003388" />
 <link rel="canonical" href="https://mr.akyat.orange-pla.net/" />
-<link rel="icon" type="image/png" sizes="256x256" href="/favicon.png" />
-<link rel="icon" type="image/png" sizes="128x128" href="/favicon128.png" />
-<link rel="icon" type="image/png" sizes="64x64" href="/favicon64.png" />
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon32.png" />
-<link href="/css/uppy.min.css" rel="stylesheet" />
+<link rel="icon" type="image/png" sizes="256x256" href="favicon.png" />
+<link rel="icon" type="image/png" sizes="128x128" href="favicon128.png" />
+<link rel="icon" type="image/png" sizes="64x64" href="favicon64.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="favicon32.png" />
+<link href="css/uppy.min.css" rel="stylesheet" />
 <style>
 @font-face {
 	font-family: lilitaone;
-	src: url('/font/LilitaOne-Regular.ttf');
+	src: url('font/LilitaOne-Regular.ttf');
 }
 html,body {
 	background: #999999;
@@ -102,8 +102,8 @@ footer {
 	background: repeating-conic-gradient(rgba(0,0,0,.5) 0% 25%, rgba(255,255,255,.5) 0% 50%) 50% / 16px 16px;
 }
 </style>
-<script src="/js/uppy.min.js" integrity="sha512-vqF30ycucoP1qi0BYuWkUMC95BXZ2kMP5iLwTnxAt8AcO9SW/FAV0f0baCJU8aOvOizT8I5x1iuhS5KnYzLCkQ=="></script>
-<script src="/js/konva.min.js" integrity="sha512-7TYV9qFuQjXYN5W6BL7AUJ6rkrQhDf2Oshg5ZjErvmC79l9V948XsiW4wxOdAtf5R8c00p/Og3k3zjEV6HnjDQ=="></script>
+<script src="js/uppy.min.js" integrity="sha512-vqF30ycucoP1qi0BYuWkUMC95BXZ2kMP5iLwTnxAt8AcO9SW/FAV0f0baCJU8aOvOizT8I5x1iuhS5KnYzLCkQ=="></script>
+<script src="js/konva.min.js" integrity="sha512-7TYV9qFuQjXYN5W6BL7AUJ6rkrQhDf2Oshg5ZjErvmC79l9V948XsiW4wxOdAtf5R8c00p/Og3k3zjEV6HnjDQ=="></script>
 <script type="module">
 /*! For Pavolia Reine with love © 2022 LiviaMedeiros */
 const _ = {
@@ -254,13 +254,13 @@ const main = async () => {
 	_.layer.add(new Konva.Image({
 		x: 0,
 		y: 0,
-		image: (await loadImage('/img/mrAkyat.png')).target,
+		image: (await loadImage('img/mrAkyat.png')).target,
 		width,
 		height,
 	}), _.transformer);
 
 	Promise.all(accessories.map(name =>
-		loadImage(`/img/${name}.png`).then(({ target }) => drawImage(target, { name }))
+		loadImage(`img/${name}.png`).then(({ target }) => drawImage(target, { name }))
 	));
 
 	document.addEventListener('keydown', e => {
@@ -288,7 +288,7 @@ const main = async () => {
 					y: Math.min(y + delta / 100, 10),
 				});
 			}; break;
-			case 'Space': new Audio('/sound/honk.mp3').play(); break;
+			case 'Space': new Audio('sound/honk.mp3').play(); break;
 			default: return;
 		}
 		e.preventDefault();
